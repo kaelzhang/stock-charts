@@ -8,6 +8,7 @@
     "ava": {
       "sourceMaps": "inline",
       "plugins": [
+        "transform-flow-strip-types",
         "transform-es2015-modules-commonjs",
         "transform-class-properties",
         "transform-object-rest-spread",
@@ -24,6 +25,7 @@
 
     "babel": {
       "plugins": [
+        "transform-flow-strip-types",
         "transform-es2015-modules-commonjs",
         "transform-class-properties",
         "transform-object-rest-spread",
@@ -40,6 +42,7 @@
 
     "rollup": {
       "plugins": [
+        "transform-flow-strip-types",
         "transform-class-properties",
         "transform-object-rest-spread",
         "transform-exponentiation-operator",
