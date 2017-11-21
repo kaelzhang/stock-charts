@@ -1,15 +1,16 @@
 import setOptions from 'set-options'
 import {isCandlestick, Candlestick, Candlesticks} from 'candlesticks'
+import err from 'err-object'
 
 const DEFAULT_OPTIONS = {
   bearishColor: 'green',
   bullishColor: 'red',
   // TODO: naming
   gap: 2,
-  lineWidth: 1,
-  candleDiameter: 4
+  innerWidth: 1,
+  candleDiameter: 4,
+  maxYScale: 100
 }
-const DEFAULT_YSCALE = 500
 
 class Stage {
   constructor (x, y, width, height) {
@@ -21,10 +22,18 @@ class Stage {
   }
 }
 
+const justReturn = y => y
+
 export default class {
   constructor (options) {
     this.options = setOptions(options, DEFAULT_OPTIONS)
-    console.log(this.options)
+
+    this._transformY = justReturn
+    this._transformHeight = justReturn
+    this._maxCandles = 0
+    this._step = 0
+    this._radius = 0
+    this.stage = null
   }
 
   setData (data: Array | Candlesticks) {
@@ -36,26 +45,42 @@ export default class {
   }
 
   clean (ctx) {
+    this._checkStage()
     ctx.clearRect(...this.stage.array)
   }
 
-  _maxCandles () {
+  _checkStage () {
+    if (!this.stage) {
+      throw err({
+        message: 'stage is not initialized',
+        name: 'NoStageError',
+        code: 'NO_STAGE'
+      })
+    }
+  }
+
+  _calculateMaxCandles () {
     const {
       gap,
       lineWidth,
       candleDiameter
     } = this.options
 
-    return parseInt(this.stage.width / (gap + lineWidth * 2 + candleDiameter))
+    this._step = gap + candleDiameter
+    this._radius = candleDiameter / 2
+    this._maxCandles = parseInt(this.stage.width / this._step)
   }
 
-  _dataYRange (amount) {
+  _generateGetX () {
+    const offset = this.data.length - this._maxCandles - i + 1
+    this._getX = i => this._radius + this._step * offset
+  }
+
+  _generateTransformY () {
     let min = Number.POSITIVE_INFINITY
     let max = -1
 
-    const minI = this.data.length - amount
-
-    this.data.lastForEach(candle => {
+    this._iterate(candle => {
       if (min > candle.low) {
         min = candle.low
       }
@@ -63,10 +88,19 @@ export default class {
       if (max < candle.high) {
         max = candle.high
       }
+    })
 
-    }, (nothing, i) => i <= minI)
+    const yScale = max === min
+      ? 1
+      : Math.min(this.options.maxYScale, height / (max - min))
 
-    return [min, max]
+    this._transformY = y => min + (y - min) * yScale
+    this._transformHeight = height => height * yScale
+  }
+
+  _iterate (iteratee) {
+    const minI = this.data.length - this._maxCandles
+    this.data.lastForEach(iteratee, (nothing, i) => i <= minI)
   }
 
   // datum:
@@ -76,31 +110,26 @@ export default class {
   // - volume
   // - time
   draw (ctx) {
+    this._checkStage()
+    this._calculateMaxCandles()
+    this._generateGetX()
+    this._generateTransformY()
+
     const {
       bullishColor,
       bearishColor,
-      lineWidth,
       candleDiameter,
-      gap
+      lineWidth
     } = this.options
-
-    // TODO: use hhv, llv to calculate yScale
-    if (typeof this.options.yScale !== 'number') {
-      this.options.yScale = DEFAULT_YSCALE
-    }
-
     const halfLineWidth = lineWidth / 2
-    const halfDiameter = candleDiameter / 2
-    const delta = gap + candleDiameter + 2 * lineWidth
-console.log(this.series, ctx)
-    this.series.forEach((datum, i) => {
-      const x = (i + 1) * delta
+    const radius = candleDiameter / 2
 
-      const candle = isCandlestick(datum)
-        ? datum
-        : Candlestick.from(datum)
+    ctx.lineWidth = lineWidth
 
+    this._iterate((candle, i) => {
+      const x = this._getX(i)
       const bullish = candle.isBullish
+
       ctx.strokeStyle = ctx.fillStyle = bullish
         ? bullishColor
         : bearishColor
@@ -122,7 +151,7 @@ console.log(this.series, ctx)
       bullish
         // Draw a hollow body for bullish candlestick
         ? this._rect(ctx,
-            x - halfDiameter,
+            x - this._outerRadius,
             candle.close,
             candleDiameter,
             candle.body,
@@ -130,7 +159,7 @@ console.log(this.series, ctx)
 
         // Draw a solid body for bearish candlestick
         : this._rect(ctx,
-            x - halfDiameter,
+            x - this._outerRadius,
             candle.open,
             candleDiameter,
             candle.body)
@@ -138,8 +167,20 @@ console.log(this.series, ctx)
   }
 
   _rect (ctx, x, y, width, height, fill = true) {
-    const yScale = this.options.yScale
-    console.log(x, y * yScale - 300, width, height * yScale)
-    ctx[fill ? 'fillRect': 'strokeRect'](x, y * yScale - 1300, width, height * yScale)
+    y = this._transformY(y)
+    height = this._transformHeight(height)
+
+    if (fill) {
+      ctx.fillRect(x, y, width, height)
+      return
+    }
+
+    const {
+      lineWidth
+    } = this.options
+    const halfLineWidth = lineWidth / 2
+
+    ctx.strokeRect(
+      x - halfLineWidth, y - halfLineWidth, width - lineWidth, height - lineWidth)
   }
 }
