@@ -52,7 +52,7 @@ class YTransformer {
   }
 
   y (y) {
-    return (max - y) * this._scale + this._offset
+    return (this._max - y) * this._scale + this._offset
   }
 
   height (height) {
@@ -131,16 +131,8 @@ export default class {
       }
     })
 
-    const {
-      height
-    } = this.stage
-    console.log(min, max, height / (max - min))
-    const yScale = max === min
-      ? 1
-      : Math.min(this.options.maxYScale, height / (max - min))
-
-    this._transformY = y => min + (y - min) * yScale
-    this._transformHeight = height => height * yScale
+    this._transformY = new YTransformer(
+      min, max, this.stage.height, this.options.maxYScale)
   }
 
   _iterate (iteratee) {
@@ -159,7 +151,7 @@ export default class {
     this._calculateMaxCandles()
     this._generateGetX()
     this._generateTransformY()
-console.log(this)
+
     const {
       bullishColor,
       bearishColor,
@@ -174,20 +166,20 @@ console.log(this)
     this._iterate((candle, i) => {
       const x = this._getX(i)
       const bullish = candle.isBullish
-console.log(x, candle)
+
       ctx.strokeStyle = ctx.fillStyle = bullish
         ? bullishColor
         : bearishColor
 
       // Upper shadow
-      this._rect(ctx,
+      candle.upperShadow && this._rect(ctx,
         x - halfLineWidth,
         candle.high,
         lineWidth,
         candle.upperShadow)
 
       // Lower shadow
-      this._rect(ctx,
+      candle.lowerShadow && this._rect(ctx,
         x - halfLineWidth,
         bullish ? candle.open : candle.close,
         lineWidth,
@@ -216,15 +208,17 @@ console.log(x, candle)
       lineWidth
     } = this.options
 
-    y = this._transformY(y)
-    height = Math.max(lineWidth, this._transformHeight(height))
-// console.log(x, y, width ,height)
+    y = this._transformY.y(y)
+    height = Math.max(lineWidth, this._transformY.height(height))
+
     if (fill) {
       ctx.fillRect(x, y, width, height)
       return
     }
 
-
+    // The box model of canvas (stroke)rect:
+    // - width: contains half line width
+    // - half line width is outside width
     const halfLineWidth = lineWidth / 2
 
     ctx.strokeRect(

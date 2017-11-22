@@ -11,7 +11,7 @@ export default {
     const canvas = this.$refs.canvas
     const context = canvas.getContext('2d')
 
-    const url = 'http://api.ost.dev/stock/sz002239/candlesticks?span=DAY&from=2017-11-1'
+    const url = 'http://api.ost.dev/stock/sz002239/candlesticks?span=DAY&from=2017-7-1'
 
     const {data} = await axios.get(url)
 
