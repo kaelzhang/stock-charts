@@ -15,8 +15,11 @@ export default {
 
     const {data} = await axios.get(url)
 
-    const cs = new Candlesticks
-    cs.setSeries(data.filter(Boolean))
+    const cs = new Candlesticks({
+      candleDiameter: 20
+    })
+    cs.setData(data.filter(Boolean))
+    cs.setStage(0, 0, 1000, 300)
     cs.draw(context)
   }
 }

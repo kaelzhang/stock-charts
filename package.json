@@ -5,7 +5,7 @@
   "main": "lib/index.js",
   "module": "src/index.js",
   "scripts": {
-    "dev": "PORT=9101 nuxt",
+    "dev": "PORT=9101 BABEL_ENV=babel nuxt",
     "build": "BABEL_ENV=rollup rollup -c",
     "test": "BABEL_ENV=ava nyc ava --verbose --timeout=10s",
     "test-no-cov": "BABEL_ENV=ava ava --verbose --timeout=10s",
@@ -44,14 +44,15 @@
     "ava": "^0.16.0",
     "axios": "^0.17.1",
     "babel-cli": "^6.16.0",
+    "babel-plugin-syntax-object-rest-spread": "^6.13.0",
     "babel-plugin-syntax-trailing-function-commas": "^6.13.0",
     "babel-plugin-transform-async-to-generator": "^6.22.0",
     "babel-plugin-transform-class-properties": "^6.16.0",
     "babel-plugin-transform-es2015-modules-commonjs": "^6.26.0",
     "babel-plugin-transform-exponentiation-operator": "^6.8.0",
+    "babel-plugin-transform-flow-strip-types": "^6.22.0",
     "babel-plugin-transform-inline-environment-variables": "^6.8.0",
     "babel-plugin-transform-object-rest-spread": "^6.16.0",
-    "babel-plugin-transform-flow-strip-types": "^6.22.0",
     "babel-plugin-transform-runtime": "^6.23.0",
     "babel-register": "^6.24.1",
     "codecov": "^2.3.0",
@@ -64,7 +65,7 @@
   },
   "dependencies": {
     "babel-runtime": "^6.23.0",
-    "candlesticks": "^1.2.0",
+    "candlesticks": "^1.2.1",
     "err-object": "^1.0.2",
     "set-options": "^2.0.2"
   }

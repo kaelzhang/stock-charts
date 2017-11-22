@@ -1,4 +1,4 @@
-{
+module.exports = {
   "parserOpts": {
     // Allow returns in the module
     "allowReturnOutsideFunction": true
@@ -44,6 +44,7 @@
       "plugins": [
         "transform-flow-strip-types",
         "transform-class-properties",
+        "syntax-object-rest-spread",
         "transform-object-rest-spread",
         "transform-exponentiation-operator",
         "transform-async-to-generator",

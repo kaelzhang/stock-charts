@@ -1,15 +1,15 @@
 import setOptions from 'set-options'
 import {isCandlestick, Candlestick, Candlesticks} from 'candlesticks'
-import err from 'err-object'
+// import err from 'err-object'
 
 const DEFAULT_OPTIONS = {
   bearishColor: 'green',
   bullishColor: 'red',
   // TODO: naming
   gap: 2,
-  innerWidth: 1,
+  lineWidth: 1,
   candleDiameter: 4,
-  maxYScale: 100
+  maxYScale: 1000
 }
 
 class Stage {
@@ -22,21 +22,59 @@ class Stage {
   }
 }
 
-const justReturn = y => y
+class YTransformer {
+  constructor (min, max, stageHeight, maxScale) {
+    this._min = min
+    this._max = max
+    this._height = stageHeight
+
+    const delta = max - min
+
+    // The scale level for Y axis
+    this._scale = delta === 0
+      ? 1
+      : Math.min(maxScale || Number.POSITIVE_INFINITY, stageHeight / delta)
+
+    // Y: 0 -----------------------
+    //          |               |
+    //       offset             |
+    //          |               |
+    // max: --------------      |
+    //                          |
+    // y:   --------       stage height
+    //                          |
+    // min: --------------      |
+    //          |               |
+    //       offset             |
+    //          |               |
+    // ----------------------------
+    this._offset = (stageHeight - this._scale * delta) / 2
+  }
+
+  y (y) {
+    return (max - y) * this._scale + this._offset
+  }
+
+  height (height) {
+    return height * this._scale
+  }
+}
+
+function NOOP () {}
 
 export default class {
   constructor (options) {
     this.options = setOptions(options, DEFAULT_OPTIONS)
 
-    this._transformY = justReturn
-    this._transformHeight = justReturn
+    this._getX = NOOP
+    this._transformY = null
     this._maxCandles = 0
     this._step = 0
     this._radius = 0
     this.stage = null
   }
 
-  setData (data: Array | Candlesticks) {
+  setData (data) { //  Array | Candlesticks
     this.data = Candlesticks.from(data)
   }
 
@@ -51,11 +89,12 @@ export default class {
 
   _checkStage () {
     if (!this.stage) {
-      throw err({
-        message: 'stage is not initialized',
-        name: 'NoStageError',
-        code: 'NO_STAGE'
-      })
+      throw new Error('stage is not initialized')
+      // throw err({
+      //   message: 'stage is not initialized',
+      //   name: 'NoStageError',
+      //   code: 'NO_STAGE'
+      // })
     }
   }
 
@@ -72,8 +111,10 @@ export default class {
   }
 
   _generateGetX () {
-    const offset = this.data.length - this._maxCandles - i + 1
-    this._getX = i => this._radius + this._step * offset
+    this._getX = i => {
+      return this.stage.x + this.stage.width - this._radius - this._step * (
+        this.data.length - 1 - i)
+    }
   }
 
   _generateTransformY () {
@@ -90,6 +131,10 @@ export default class {
       }
     })
 
+    const {
+      height
+    } = this.stage
+    console.log(min, max, height / (max - min))
     const yScale = max === min
       ? 1
       : Math.min(this.options.maxYScale, height / (max - min))
@@ -114,7 +159,7 @@ export default class {
     this._calculateMaxCandles()
     this._generateGetX()
     this._generateTransformY()
-
+console.log(this)
     const {
       bullishColor,
       bearishColor,
@@ -129,7 +174,7 @@ export default class {
     this._iterate((candle, i) => {
       const x = this._getX(i)
       const bullish = candle.isBullish
-
+console.log(x, candle)
       ctx.strokeStyle = ctx.fillStyle = bullish
         ? bullishColor
         : bearishColor
@@ -151,7 +196,7 @@ export default class {
       bullish
         // Draw a hollow body for bullish candlestick
         ? this._rect(ctx,
-            x - this._outerRadius,
+            x - this._radius,
             candle.close,
             candleDiameter,
             candle.body,
@@ -159,7 +204,7 @@ export default class {
 
         // Draw a solid body for bearish candlestick
         : this._rect(ctx,
-            x - this._outerRadius,
+            x - this._radius,
             candle.open,
             candleDiameter,
             candle.body)
@@ -167,17 +212,19 @@ export default class {
   }
 
   _rect (ctx, x, y, width, height, fill = true) {
-    y = this._transformY(y)
-    height = this._transformHeight(height)
+    const {
+      lineWidth
+    } = this.options
 
+    y = this._transformY(y)
+    height = Math.max(lineWidth, this._transformHeight(height))
+// console.log(x, y, width ,height)
     if (fill) {
       ctx.fillRect(x, y, width, height)
       return
     }
 
-    const {
-      lineWidth
-    } = this.options
+
     const halfLineWidth = lineWidth / 2
 
     ctx.strokeRect(
