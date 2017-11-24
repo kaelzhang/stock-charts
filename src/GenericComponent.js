@@ -1,5 +1,4 @@
 import setOptions from 'set-options'
-import d3 from 'd3'
 
 export const symbol = key => Symbol.for(`stock-charts:${key}`)
 export const DATA = symbol('data')
@@ -18,15 +17,11 @@ export default class GenericComponent {
 
 
   [DATA] (data) {
-    this._data = data
+    this._raw = data
   }
 
   setStage (stage) {
     this._stage = stage
-  }
-
-  [SET_SCALER] () {
-
   }
 
   // Determine the min and max of the domain
@@ -37,17 +32,35 @@ export default class GenericComponent {
   }
 
   // Returns the iterator
-  _iterator () {
+  _transform (raw) {
     throw new Error('_range not implemented')
   }
 
-  _generateScaler (iterator) {
+  _draw (selection, data) {
+    throw new Error('_range not implemented')
+  }
+
+  _generateYScaler (iterator) {
     const [min, max] = iterator.reduce((prev, current) => {
       return this._range(current, prev)
-    }, [0, Number.POSITIVE_INFINITY])
+    }, [Number.POSITIVE_INFINITY, 0])
 
-    this._scaler = new YScaler(
+    this._y = new YScaler(
       min, max, this._stage.height, this._stage.maxYScale)
+  }
+
+  draw (selection) {
+    const data = this._transform(this._raw)
+    this._generateYScaler(data)
+
+    const container = selection
+    .append('g')
+    // .attr('x', this._stage.x)
+    // .attr('y', this._stage.y)
+    // .attr('width', this._stage.width)
+    // .attr('height', this._stage.height)
+
+    this._draw(container, data)
   }
 }
 
@@ -85,6 +98,7 @@ class YScaler {
   }
 
   height (height) {
+    console.log(height, this)
     return height * this._scale
   }
 }

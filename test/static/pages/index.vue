@@ -1,5 +1,6 @@
 <template>
-  <canvas ref="canvas" width="1000" height="300"></canvas>
+  <!-- <canvas ref="canvas" width="1000" height="300"></canvas> -->
+  <svg ref="chart"></svg>
 </template>
 
 <script>
@@ -11,26 +12,24 @@ import {
 
 export default {
   async mounted () {
-    const canvas = this.$refs.canvas
-    const context = canvas.getContext('2d')
-
     const url = 'http://api.ost.dev/stock/sz002239/candlesticks?span=DAY&from=2017-11-1'
 
     const {data} = await axios.get(url)
 
-    new Playground(context)
+    const chart = this.$refs.chart
+
+    new Playground()
+    .select(chart)
+    .data(data.filter(Boolean))
     .stage(0, 0, 1000, 300)
-    .add()
-    
-    const cs = new Candlesticks({
-      candleDiameter: 20
-    })
-    cs.setData(data.filter(Boolean))
-    cs.setStage(0, 0, 1000, 300)
-    cs.draw(context)
+    .add(new Candlesticks)
+    .draw()
   }
 }
 </script>
 
 <style lang="css">
+.candle {
+  fill: red
+}
 </style>

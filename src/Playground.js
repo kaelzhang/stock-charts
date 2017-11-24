@@ -1,12 +1,12 @@
 import {DATA, symbol} from './GenericComponent'
 import {Candlesticks} from 'candlesticks'
-import d3 from 'd3'
+import {select} from 'd3'
 
 const createStageKey = (x, y, width, height) =>
   Symbol.for(`${x}:${y}:${width}:${height}`)
 
 class GenericManager {
-  constructor () {
+  constructor (container) {
     this._children = []
   }
 
@@ -29,7 +29,7 @@ class GenericManager {
   }
 
   draw () {
-    this._runChildCommand('draw')
+    this._runChildCommand('draw', [this._container])
   }
 
   [DATA] (data) {
@@ -39,13 +39,18 @@ class GenericManager {
 }
 
 export default class Playground extends GenericManager {
+  // constructor (container) {
+  //   super(select(container))
+  // }
+
   // Set data source
   data (data) {
-    return this[DATA](Candlesticks.from(data))
+    this[DATA](Candlesticks.from(data))
+    return this
   }
 
   select (container) {
-    this._container = d3.select(container)
+    this._container = select(container)
     return this
   }
 
@@ -54,10 +59,10 @@ export default class Playground extends GenericManager {
     const key = createStageKey(x, y, width, height)
 
     return this._addChild(child => child._key === key, () => {
-      const stage = new Stage(this, key, x, y, width, height, options)
+      const stage = new Stage(this._container, this, key, x, y, width, height, options)
 
-      if (this.data) {
-        stage[DATA](data)
+      if (this._data) {
+        stage[DATA](this._data)
       }
 
       return stage
@@ -66,10 +71,11 @@ export default class Playground extends GenericManager {
 }
 
 class Stage extends GenericManager {
-  constructor (playground, key, x, y, width, height, {
+  constructor (container, playground, key, x, y, width, height, {
     maxYScale = 1000
   } = {}) {
-    super(playground[CTX])
+    super()
+    this._container = container
     this._playground = playground
     this._key = key
     this._data = null
@@ -84,6 +90,10 @@ class Stage extends GenericManager {
   // TODO
   clear () {
 
+  }
+
+  draw () {
+    this._runChildCommand('draw', [this._container])
   }
 
   add (chart) {
