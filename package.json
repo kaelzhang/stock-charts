@@ -66,6 +66,7 @@
   "dependencies": {
     "babel-runtime": "^6.23.0",
     "candlesticks": "^1.2.1",
+    "d3": "^4.12.0",
     "err-object": "^1.0.2",
     "set-options": "^2.0.2"
   }

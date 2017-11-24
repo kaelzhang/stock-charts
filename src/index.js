@@ -1,1 +1,4 @@
-export {default as Candlesticks} from './Candlesticks'
+export {
+  Candlesticks,
+  Playground
+} from './Candlesticks'

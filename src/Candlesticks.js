@@ -1,4 +1,5 @@
-import setOptions from 'set-options'
+import GenericComponent from './GenericComponent'
+
 import {isCandlestick, Candlestick, Candlesticks} from 'candlesticks'
 // import err from 'err-object'
 
@@ -8,64 +9,14 @@ const DEFAULT_OPTIONS = {
   // TODO: naming
   gap: 2,
   lineWidth: 1,
-  candleDiameter: 4,
-  maxYScale: 1000
-}
-
-class Stage {
-  constructor (x, y, width, height) {
-    this.x = x
-    this.y = y
-    this.width = width
-    this.height = height
-    this.array = [x, y, width, height]
-  }
-}
-
-class YTransformer {
-  constructor (min, max, stageHeight, maxScale) {
-    this._min = min
-    this._max = max
-    this._height = stageHeight
-
-    const delta = max - min
-
-    // The scale level for Y axis
-    this._scale = delta === 0
-      ? 1
-      : Math.min(maxScale || Number.POSITIVE_INFINITY, stageHeight / delta)
-
-    // Y: 0 -----------------------
-    //          |               |
-    //       offset             |
-    //          |               |
-    // max: --------------      |
-    //                          |
-    // y:   --------       stage height
-    //                          |
-    // min: --------------      |
-    //          |               |
-    //       offset             |
-    //          |               |
-    // ----------------------------
-    this._offset = (stageHeight - this._scale * delta) / 2
-  }
-
-  y (y) {
-    return (this._max - y) * this._scale + this._offset
-  }
-
-  height (height) {
-    return height * this._scale
-  }
+  candleDiameter: 4
 }
 
 function NOOP () {}
 
-export default class {
+export default class extends GenericComponent {
   constructor (options) {
-    this.options = setOptions(options, DEFAULT_OPTIONS)
-
+    super(options, DEFAULT_OPTIONS)
     this._getX = NOOP
     this._transformY = null
     this._maxCandles = 0
@@ -74,27 +25,17 @@ export default class {
     this.stage = null
   }
 
-  setData (data) { //  Array | Candlesticks
-    this.data = Candlesticks.from(data)
+  _iterator () {
+    return this._data.slice(-1 * this._maxCandles)
   }
 
-  setStage (x, y, width, height) {
-    this.stage = new Stage(x, y, width, height)
-  }
-
-  clean (ctx) {
-    this._checkStage()
-    ctx.clearRect(...this.stage.array)
+  _range (candle, [min, max]) {
+    return [Math.min(candle.low, min), Math.max(candle.high, max)]
   }
 
   _checkStage () {
     if (!this.stage) {
       throw new Error('stage is not initialized')
-      // throw err({
-      //   message: 'stage is not initialized',
-      //   name: 'NoStageError',
-      //   code: 'NO_STAGE'
-      // })
     }
   }
 
