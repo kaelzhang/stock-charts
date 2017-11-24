@@ -40,8 +40,13 @@ export default class GenericComponent {
     throw new Error('_range not implemented')
   }
 
-  _generateYScaler (iterator) {
-    const [min, max] = iterator.reduce((prev, current) => {
+  // TODO: apply ranges for all charts within the stage
+  _applyRange () {
+
+  }
+
+  _generateYScaler (data) {
+    const [min, max] = data.reduce((prev, current) => {
       return this._range(current, prev)
     }, [Number.POSITIVE_INFINITY, 0])
 

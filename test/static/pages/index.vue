@@ -9,10 +9,14 @@ import {
   Candlesticks,
   Playground
 } from '../../../src'
+import qs from 'query-string'
 
 export default {
   async mounted () {
-    const url = 'http://api.ost.dev/stock/sz002239/candlesticks?span=DAY&from=2017-11-1'
+    const query = qs.parse(location.search.slice(1))
+
+    const url = 'http://api.ost.dev/stock/sz002239/candlesticks?span=DAY&from='
+      + query.from
 
     const {data} = await axios.get(url)
 

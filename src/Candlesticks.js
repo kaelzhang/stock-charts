@@ -1,10 +1,7 @@
 import GenericComponent from './GenericComponent'
 import {scaleBand} from 'd3'
 
-const DEFAULT_OPTIONS = {
-  // bearishColor: 'green',
-  // bullishColor: 'red'
-}
+const DEFAULT_OPTIONS = {}
 
 function NOOP () {}
 
@@ -26,11 +23,6 @@ export default class extends GenericComponent {
   }
 
   _draw (container, data) {
-    const {
-      bullishColor,
-      bearishColor
-    } = this.options
-
     const x = scaleBand()
     .domain(data.map(data => data.time))
     .range([this._stage.x, this._stage.x + this._stage.width])
