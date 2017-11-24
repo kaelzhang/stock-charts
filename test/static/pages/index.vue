@@ -1,6 +1,6 @@
 <template>
   <!-- <canvas ref="canvas" width="1000" height="300"></canvas> -->
-  <svg ref="chart"></svg>
+  <svg width="1000" height="300" ref="chart"></svg>
 </template>
 
 <script>
@@ -29,7 +29,18 @@ export default {
 </script>
 
 <style lang="css">
-.candle {
+.candlestick .body{
+  fill: green
+}
+.bullish .body{
+  fill: transparent;
+  stroke: red;
+  stroke-width: 1
+}
+.candlestick .shadow {
+  fill: green
+}
+.bullish .shadow {
   fill: red
 }
 </style>

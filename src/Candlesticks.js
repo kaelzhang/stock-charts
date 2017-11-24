@@ -2,8 +2,8 @@ import GenericComponent from './GenericComponent'
 import {scaleBand} from 'd3'
 
 const DEFAULT_OPTIONS = {
-  bearishColor: 'green',
-  bullishColor: 'red'
+  // bearishColor: 'green',
+  // bullishColor: 'red'
 }
 
 function NOOP () {}
@@ -25,12 +25,6 @@ export default class extends GenericComponent {
     return [Math.min(candle.low, min), Math.max(candle.high, max)]
   }
 
-  // datum:
-  // - high
-  // - low
-  // - close
-  // - volume
-  // - time
   _draw (container, data) {
     const {
       bullishColor,
@@ -44,18 +38,48 @@ export default class extends GenericComponent {
 
     const y = this._y
     const width = x.bandwidth()
+    const halfWidth = width / 2
 
     const candle = container
+    .classed('candlesticks', true)
     .selectAll('g')
     .data(data)
     .enter()
     .append('g')
+    .classed('candlestick', true)
+    // c:
+    // - high
+    // - low
+    // - close
+    // - volume
+    // - time
+    .classed('bullish', c => c.isBullish)
 
-    candle.append('rect')
-    .classed('candle', true)
+    const body = candle.append('rect')
+    .classed('body', true)
     .attr('x', c => x(c.time))
     .attr('y', c => y.y(getY(c)))
-    .attr('height', c => y.height(c.body))
+    .attr('height', c => y.height(c.body) || 1)
     .attr('width', width)
+
+    candle
+    .filter(c => c.upperShadow)
+    .append('rect')
+    .classed('shadow', true)
+    .classed('upperShadow', true)
+    .attr('x', c => x(c.time) + halfWidth - 0.5)
+    .attr('y', c => y.y(c.high))
+    .attr('height', c => y.height(c.upperShadow))
+    .attr('width', 1)
+
+    candle
+    .filter(c => c.lowerShadow)
+    .append('rect')
+    .classed('shadow', true)
+    .classed('lowerShadow', true)
+    .attr('x', c => x(c.time) + halfWidth - 0.5)
+    .attr('y', c => y.y(c.low + c.lowerShadow))
+    .attr('height', c => y.height(c.lowerShadow))
+    .attr('width', 1)
   }
 }

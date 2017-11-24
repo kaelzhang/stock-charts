@@ -98,7 +98,6 @@ class YScaler {
   }
 
   height (height) {
-    console.log(height, this)
     return height * this._scale
   }
 }
