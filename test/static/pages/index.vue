@@ -8,6 +8,7 @@ import axios from 'axios'
 import {
   Candlesticks,
   BollingerBands,
+  MovingAverage,
   Playground
 } from '../../../src'
 import qs from 'query-string'
@@ -33,7 +34,13 @@ export default {
     .stage(0, 0, 1400, 300)
     .add(new Candlesticks)
     .add(new BollingerBands)
-    // .add(new MovingAverage())
+    .add(new MovingAverage)
+    .add(new MovingAverage({
+      periodSize: 10
+    }))
+    .add(new MovingAverage({
+      periodSize: 20
+    }))
     .draw()
   }
 }
@@ -54,7 +61,7 @@ export default {
 .bullish .shadow {
   fill: red
 }
-.boll {
+.boll, .ma {
   fill: none;
   stroke-linejoin: round;
   stroke-linecap: round;
@@ -67,5 +74,17 @@ export default {
 }
 .boll.lower {
   stroke: green
+}
+.ma {
+  stroke-width: 2
+}
+.ma5 {
+  stroke: blue
+}
+.ma10 {
+  stroke: orange
+}
+.ma20 {
+  stroke: magenta
 }
 </style>
