@@ -34,16 +34,22 @@ import {
   Playground,
   Candlesticks,
   BollingerBands,
-  MovingAverage
+  MovingAverage,
+  KDJ
 } from 'stock-charts'
 
-new Playground()
+const playground = new Playground()
 .select('.chart')
 .data(data)
-.stage(0, 0, 1000, 300)
+
+playground.stage(0, 0, 1000, 300)
 .add(new Candlesticks)
 .add(new BollingerBands)
 .add(new MovingAverage({periodSize: 20}))
+.draw()
+
+playground.stage(0, 320, 1000, 200)
+.add(new KDJ)
 .draw()
 ```
 

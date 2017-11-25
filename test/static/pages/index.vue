@@ -1,6 +1,6 @@
 <template>
   <!-- <canvas ref="canvas" width="1000" height="300"></canvas> -->
-  <svg width="1400" height="300" ref="chart"></svg>
+  <svg width="1400" height="530" ref="chart"></svg>
 </template>
 
 <script>
@@ -9,6 +9,7 @@ import {
   Candlesticks,
   BollingerBands,
   MovingAverage,
+  KDJ,
   Playground
 } from '../../../src'
 import qs from 'query-string'
@@ -28,10 +29,11 @@ export default {
 
     const chart = this.$refs.chart
 
-    new Playground()
+    const play = new Playground()
     .select(chart)
     .data(data.filter(Boolean))
-    .stage(0, 0, 1400, 300)
+
+    play.stage(0, 0, 1400, 300)
     .add(new Candlesticks)
     .add(new BollingerBands)
     .add(new MovingAverage)
@@ -41,6 +43,10 @@ export default {
     .add(new MovingAverage({
       periodSize: 20
     }))
+    .draw()
+
+    play.stage(0, 330, 1400, 200)
+    .add(new KDJ)
     .draw()
   }
 }
@@ -61,10 +67,13 @@ export default {
 .bullish .shadow {
   fill: red
 }
-.boll, .ma {
+.boll, .ma, .kdj{
   fill: none;
   stroke-linejoin: round;
   stroke-linecap: round;
+}
+.boll:hover {
+  stroke-width: 2
 }
 .boll.upper {
   stroke: blue
@@ -78,13 +87,16 @@ export default {
 .ma {
   stroke-width: 2
 }
-.ma5 {
+.ma:hover {
+  stroke-width: 4
+}
+.ma5, .k {
   stroke: blue
 }
-.ma10 {
+.ma10, .d {
   stroke: orange
 }
-.ma20 {
+.ma20, .j {
   stroke: magenta
 }
 </style>

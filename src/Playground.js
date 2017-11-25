@@ -100,7 +100,11 @@ class Stage extends GenericManager {
     }, [Number.POSITIVE_INFINITY, 0])
     this._size.setRange(range)
 
-    this._runChildCommand('draw', this._container)
+    const stage = this._container.append('g')
+    .classed('stage', true)
+    .attr('transform', `translate(${this._size.x}, ${this._size.y})`)
+
+    this._runChildCommand('draw', stage)
   }
 
   add (chart) {
