@@ -25,7 +25,7 @@ export default class extends GenericComponent {
     return mapClean(b.upper, (upper, i) => {
       return {
         upper: b.upper[i],
-        middle: b.middle[i],
+        mid: b.mid[i],
         lower: b.lower[i],
         i
       }
@@ -38,7 +38,7 @@ export default class extends GenericComponent {
 
   _draw (selection, data) {
     this._path(selection, data, 'upper')
-    this._path(selection, data, 'middle')
+    this._path(selection, data, 'mid')
     this._path(selection, data, 'lower')
   }
 
