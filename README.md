@@ -33,7 +33,8 @@ $ npm install stock-charts
 import {
   Playground,
   Candlesticks,
-  BollingerBands
+  BollingerBands,
+  MovingAverage
 } from 'stock-charts'
 
 new Playground()
@@ -42,6 +43,7 @@ new Playground()
 .stage(0, 0, 1000, 300)
 .add(new Candlesticks)
 .add(new BollingerBands)
+.add(new MovingAverage({periodSize: 20}))
 .draw()
 ```
 

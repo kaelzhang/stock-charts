@@ -1,6 +1,6 @@
 {
   "name": "stock-charts",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "SVG charts for fintech.",
   "main": "lib/index.js",
   "module": "src/index.js",
