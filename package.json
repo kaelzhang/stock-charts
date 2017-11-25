@@ -1,7 +1,7 @@
 {
   "name": "stock-charts",
   "version": "1.0.0",
-  "description": "stock-charts",
+  "description": "SVG charts for fintech.",
   "main": "lib/index.js",
   "module": "src/index.js",
   "scripts": {
@@ -21,7 +21,10 @@
     "url": "git://github.com/kaelzhang/stock-charts.git"
   },
   "keywords": [
-    "stock-charts"
+    "stock-charts",
+    "charts",
+    "candlestick chart",
+    "bollinger bands"
   ],
   "engines": {
     "node": ">=4"

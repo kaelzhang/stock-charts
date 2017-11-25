@@ -15,7 +15,7 @@
 
 # stock-charts
 
-<!-- description -->
+SVG charts for fintech.
 
 ## Install
 
@@ -25,8 +25,24 @@ $ npm install stock-charts
 
 ## Usage
 
+```html
+<svg class="chart"></svg>
+```
+
 ```js
-import stock_charts from 'stock-charts'
+import {
+  Playground,
+  Candlesticks,
+  BollingerBands
+} from 'stock-charts'
+
+new Playground()
+.select('.chart')
+.data(data)
+.stage(0, 0, 1000, 300)
+.add(new Candlesticks)
+.add(new BollingerBands)
+.draw()
 ```
 
 ## License
