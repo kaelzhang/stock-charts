@@ -12,12 +12,16 @@ import {
 } from '../../../src'
 import qs from 'query-string'
 
+const PREFIX = 'http://api.ost.dev/stock/sz002239/candlesticks?'
+
 export default {
   async mounted () {
-    const query = qs.parse(location.search.slice(1))
+    const {
+      span = 'DAY',
+      from
+    } = qs.parse(location.search.slice(1))
 
-    const url = 'http://api.ost.dev/stock/sz002239/candlesticks?span=DAY&from='
-      + query.from
+    const url = `${PREFIX}span=${span}&from=${from}`
 
     const {data} = await axios.get(url)
 
