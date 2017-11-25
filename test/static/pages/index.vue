@@ -49,4 +49,18 @@ export default {
 .bullish .shadow {
   fill: red
 }
+.boll {
+  fill: none;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+.boll.upper {
+  stroke: blue
+}
+.boll.middle {
+  stroke: orange
+}
+.boll.lower {
+  stroke: green
+}
 </style>

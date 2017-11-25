@@ -36,7 +36,7 @@ export default class extends GenericComponent {
   }
 
   _range (datum, [min, max]) {
-    return [Math.min(datum.lower, min), Math.max(datum.upper, min)]
+    return [Math.min(datum.lower, min), Math.max(datum.upper, max)]
   }
 
   _draw (selection, data) {
