@@ -7,6 +7,7 @@
 import axios from 'axios'
 import {
   Candlesticks,
+  BollingerBands,
   Playground
 } from '../../../src'
 import qs from 'query-string'
@@ -27,6 +28,7 @@ export default {
     .data(data.filter(Boolean))
     .stage(0, 0, 1000, 300)
     .add(new Candlesticks)
+    .add(new BollingerBands)
     .draw()
   }
 }

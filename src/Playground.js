@@ -1,4 +1,4 @@
-import {DATA, symbol} from './GenericComponent'
+import {DATA, APPLY_YRANGE, TRANSFORM_DATA, symbol} from './GenericComponent'
 import {Candlesticks} from 'candlesticks'
 import {select} from 'd3'
 
@@ -22,19 +22,19 @@ class GenericManager {
     return child
   }
 
-  _runChildCommand (name, args = []) {
+  _runChildCommand (name, ...args) {
     this._children.forEach(child => {
       child[name](...args)
     })
   }
 
   draw () {
-    this._runChildCommand('draw', [this._container])
+    this._runChildCommand('draw', this._container)
   }
 
   [DATA] (data) {
     this._data = data
-    this._runChildCommand(DATA, [data])
+    this._runChildCommand(DATA, data)
   }
 }
 
@@ -93,7 +93,14 @@ class Stage extends GenericManager {
   }
 
   draw () {
-    this._runChildCommand('draw', [this._container])
+    this._runChildCommand(TRANSFORM_DATA)
+
+    const range = this._children.reduce((range, child) => {
+      return child[APPLY_YRANGE](range)
+    }, [Number.POSITIVE_INFINITY, 0])
+    this._size.setRange(range)
+
+    this._runChildCommand('draw', this._container)
   }
 
   add (chart) {
@@ -118,5 +125,9 @@ class StageSize {
     this.height = height
     this.maxYScale = maxYScale
     this.array = [x, y, width, height]
+  }
+
+  setRange ([min, max]) {
+    this.range = [min, max]
   }
 }

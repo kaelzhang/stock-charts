@@ -2,7 +2,8 @@ import setOptions from 'set-options'
 
 export const symbol = key => Symbol.for(`stock-charts:${key}`)
 export const DATA = symbol('data')
-export const SET_SCALER = symbol('set-scaler')
+export const TRANSFORM_DATA = symbol('transform-data')
+export const APPLY_YRANGE = symbol('apply-yrange')
 
 // - `_method()` underscore methods are used for inner invocation
 // - `[SYMBOL]()` Symbol methods are used for parent instance to invoke
@@ -10,6 +11,7 @@ export const SET_SCALER = symbol('set-scaler')
 export default class GenericComponent {
   constructor (options, DEFAULT_OPTIONS) {
     this.options = setOptions(options, DEFAULT_OPTIONS)
+    this._raw = null
     this._data = null
     this._stage = null
     this._scaler = null
@@ -40,23 +42,29 @@ export default class GenericComponent {
     throw new Error('_range not implemented')
   }
 
-  // TODO: apply ranges for all charts within the stage
-  _applyRange () {
-
+  [TRANSFORM_DATA] () {
+    this._data = this._transform(this._raw)
   }
 
-  _generateYScaler (data) {
-    const [min, max] = data.reduce((prev, current) => {
+  // TODO: apply ranges for all charts within the stage
+  [APPLY_YRANGE] ([min, max]) {
+    return this._data.reduce((prev, current) => {
       return this._range(current, prev)
-    }, [Number.POSITIVE_INFINITY, 0])
+    }, [min, max])
+  }
 
-    this._y = new YScaler(
-      min, max, this._stage.height, this._stage.maxYScale)
+  _generateYScaler () {
+    const {
+      range: [min, max],
+      height,
+      maxYScale
+    } = this._stage
+
+    this._y = new YScaler(min, max, height, maxYScale)
   }
 
   draw (selection) {
-    const data = this._transform(this._raw)
-    this._generateYScaler(data)
+    this._generateYScaler()
 
     const container = selection
     .append('g')
@@ -65,7 +73,7 @@ export default class GenericComponent {
     // .attr('width', this._stage.width)
     // .attr('height', this._stage.height)
 
-    this._draw(container, data)
+    this._draw(container, this._data)
   }
 }
 

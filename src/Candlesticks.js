@@ -57,8 +57,7 @@ export default class extends GenericComponent {
     candle
     .filter(c => c.upperShadow)
     .append('rect')
-    .classed('shadow', true)
-    .classed('upperShadow', true)
+    .classed('shadow upper-shadow', true)
     .attr('x', c => x(c.time) + halfWidth - 0.5)
     .attr('y', c => y.y(c.high))
     .attr('height', c => y.height(c.upperShadow))
@@ -67,8 +66,7 @@ export default class extends GenericComponent {
     candle
     .filter(c => c.lowerShadow)
     .append('rect')
-    .classed('shadow', true)
-    .classed('lowerShadow', true)
+    .classed('shadow lower-shadow', true)
     .attr('x', c => x(c.time) + halfWidth - 0.5)
     .attr('y', c => y.y(c.low + c.lowerShadow))
     .attr('height', c => y.height(c.lowerShadow))
