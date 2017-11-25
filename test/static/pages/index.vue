@@ -1,6 +1,6 @@
 <template>
   <!-- <canvas ref="canvas" width="1000" height="300"></canvas> -->
-  <svg width="1000" height="300" ref="chart"></svg>
+  <svg width="1400" height="300" ref="chart"></svg>
 </template>
 
 <script>
@@ -30,9 +30,10 @@ export default {
     new Playground()
     .select(chart)
     .data(data.filter(Boolean))
-    .stage(0, 0, 1000, 300)
+    .stage(0, 0, 1400, 300)
     .add(new Candlesticks)
     .add(new BollingerBands)
+    // .add(new MovingAverage())
     .draw()
   }
 }

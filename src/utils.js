@@ -12,3 +12,13 @@ export const lastForEach = (array, iteratee, stopAfterWhen) => {
     }
   }
 }
+
+export const mapClean = (array, mapper) => {
+  const ret = []
+
+  array.forEach((datum, i) => {
+    ret.push(mapper(datum, i))
+  })
+
+  return ret
+}

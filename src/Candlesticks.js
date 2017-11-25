@@ -1,7 +1,8 @@
-import GenericComponent from './GenericComponent'
+import GenericComponent, {symbol} from './GenericComponent'
 import {scaleBand} from 'd3'
 
 const DEFAULT_OPTIONS = {}
+const INDEX = symbol('index')
 
 function NOOP () {}
 
@@ -15,7 +16,12 @@ export default class extends GenericComponent {
   }
 
   _transform (data) {
-    return data.slice()
+    data = data.slice()
+    data.forEach((candle, i) => {
+      candle[INDEX] = i
+    })
+
+    return data
   }
 
   _range (candle, [min, max]) {
@@ -23,14 +29,9 @@ export default class extends GenericComponent {
   }
 
   _draw (container, data) {
-    const x = scaleBand()
-    .domain(data.map(data => data.time))
-    .range([this._stage.x, this._stage.x + this._stage.width])
-    .padding(0.1)
-
     const y = this._y
-    const width = x.bandwidth()
-    const halfWidth = width / 2
+    const x = this._x
+    const width = x.width()
 
     const candle = container
     .classed('candlesticks', true)
@@ -49,7 +50,7 @@ export default class extends GenericComponent {
 
     const body = candle.append('rect')
     .classed('body', true)
-    .attr('x', c => x(c.time))
+    .attr('x', c => x.x(c[INDEX]))
     .attr('y', c => y.y(getY(c)))
     .attr('height', c => y.height(c.body) || 1)
     .attr('width', width)
@@ -58,7 +59,7 @@ export default class extends GenericComponent {
     .filter(c => c.upperShadow)
     .append('rect')
     .classed('shadow upper-shadow', true)
-    .attr('x', c => x(c.time) + halfWidth - 0.5)
+    .attr('x', c => x.point(c[INDEX]) - 0.5)
     .attr('y', c => y.y(c.high))
     .attr('height', c => y.height(c.upperShadow))
     .attr('width', 1)
@@ -67,7 +68,7 @@ export default class extends GenericComponent {
     .filter(c => c.lowerShadow)
     .append('rect')
     .classed('shadow lower-shadow', true)
-    .attr('x', c => x(c.time) + halfWidth - 0.5)
+    .attr('x', c => x.point(c[INDEX]) - 0.5)
     .attr('y', c => y.y(c.low + c.lowerShadow))
     .attr('height', c => y.height(c.lowerShadow))
     .attr('width', 1)

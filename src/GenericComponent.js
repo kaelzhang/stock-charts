@@ -1,4 +1,6 @@
 import setOptions from 'set-options'
+import {scaleBand} from 'd3'
+import range from 'lodash.range'
 
 export const symbol = key => Symbol.for(`stock-charts:${key}`)
 export const DATA = symbol('data')
@@ -53,6 +55,15 @@ export default class GenericComponent {
     }, [min, max])
   }
 
+  _generateXScaler () {
+    const {
+      x,
+      width
+    } = this._stage
+
+    this._x = new XScaler(x, x + width, this._raw.length)
+  }
+
   _generateYScaler () {
     const {
       range: [min, max],
@@ -64,6 +75,7 @@ export default class GenericComponent {
   }
 
   draw (selection) {
+    this._generateXScaler()
     this._generateYScaler()
 
     const container = selection
@@ -74,6 +86,29 @@ export default class GenericComponent {
     // .attr('height', this._stage.height)
 
     this._draw(container, this._data)
+  }
+}
+
+class XScaler {
+  constructor (min, max, length, padding = 0.1) {
+    this._x = scaleBand()
+    .domain(range(length))
+    .range([min, max])
+    .padding(padding)
+
+    this._width = this._x.bandwidth()
+  }
+
+  x (x) {
+    return this._x(x)
+  }
+
+  width () {
+    return this._width
+  }
+
+  point (x) {
+    return this._x(x) + this._width / 2
   }
 }
 
