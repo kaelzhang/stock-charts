@@ -29,6 +29,7 @@ export default class extends GenericComponent {
   }
 
   _draw (selection, data) {
+    selection.classed(`moving-average ma${this.options.periodSize}`, true)
     this._path(selection, data)
   }
 
@@ -41,10 +42,9 @@ export default class extends GenericComponent {
     .y(d => y.y(d.avg))
 
     const d = l(data)
-    const className = `ma ma${this.options.periodSize}`
 
     selection.append('path')
-    .classed(className, true)
+    .classed('band', true)
     .attr('d', d)
   }
 }

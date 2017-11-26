@@ -51,6 +51,8 @@ export default class extends GenericComponent {
   }
 
   _draw (selection, data) {
+    selection.classed('kdj', true)
+
     this._path(selection, data, 'K')
     this._path(selection, data, 'D')
     this._path(selection, data, 'J')
@@ -67,7 +69,7 @@ export default class extends GenericComponent {
     const d = l(data)
 
     selection.append('path')
-    .classed(`kdj ${accessor.toLowerCase()}`, true)
+    .classed(`band ${accessor.toLowerCase()}`, true)
     .attr('d', d)
   }
 }

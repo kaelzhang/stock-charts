@@ -1,6 +1,6 @@
 <template>
   <!-- <canvas ref="canvas" width="1000" height="300"></canvas> -->
-  <svg width="1400" height="530" ref="chart"></svg>
+  <svg width="1400" height="480" ref="chart"></svg>
 </template>
 
 <script>
@@ -10,6 +10,7 @@ import {
   BollingerBands,
   MovingAverage,
   KDJ,
+  Volume,
   Playground
 } from '../../../src'
 import qs from 'query-string'
@@ -45,8 +46,11 @@ export default {
     }))
     .draw()
 
-    play.stage(0, 330, 1400, 200)
-    .add(new KDJ)
+    play.stage()
+
+    play.stage(0, 330, 1400, 150)
+    .add(new Volume)
+    // .add(new KDJ)
     .draw()
   }
 }
@@ -67,28 +71,22 @@ export default {
 .bullish .shadow {
   fill: red
 }
-.boll, .ma, .kdj{
+.band {
   fill: none;
   stroke-linejoin: round;
   stroke-linecap: round;
 }
-.boll:hover {
+.band:hover {
   stroke-width: 2
 }
-.boll.upper {
+.band.upper {
   stroke: blue
 }
-.boll.middle {
+.band.middle {
   stroke: orange
 }
-.boll.lower {
+.band.lower {
   stroke: green
-}
-.ma {
-  stroke-width: 2
-}
-.ma:hover {
-  stroke-width: 4
 }
 .ma5, .k {
   stroke: blue
@@ -98,5 +96,11 @@ export default {
 }
 .ma20, .j {
   stroke: magenta
+}
+.volume .bin {
+  fill: green
+}
+.volume .bullish {
+  fill: red
 }
 </style>

@@ -1,10 +1,7 @@
 import GenericComponent, {symbol} from './GenericComponent'
-import {scaleBand} from 'd3'
 
 const DEFAULT_OPTIONS = {}
 const INDEX = symbol('index')
-
-function NOOP () {}
 
 const getY = candle => candle.isBullish
   ? candle.close

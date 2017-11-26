@@ -3,7 +3,6 @@ import {line} from 'd3'
 import boll from 'bollinger-bands'
 import {mapClean} from './utils'
 
-
 const DEFAULT_OPTIONS = {
   periodSize: 20,
   times: 2
@@ -37,6 +36,8 @@ export default class extends GenericComponent {
   }
 
   _draw (selection, data) {
+    selection.classed('bollinger-bands', true)
+
     this._path(selection, data, 'upper')
     this._path(selection, data, 'mid')
     this._path(selection, data, 'lower')
@@ -53,7 +54,7 @@ export default class extends GenericComponent {
     const d = l(data)
 
     selection.append('path')
-    .classed(`boll ${accessor}`, true)
+    .classed(`band ${accessor}`, true)
     .attr('d', d)
   }
 }
