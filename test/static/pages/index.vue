@@ -1,6 +1,6 @@
 <template>
   <!-- <canvas ref="canvas" width="1000" height="300"></canvas> -->
-  <svg width="1400" height="480" ref="chart"></svg>
+  <svg width="1400" height="660" ref="chart"></svg>
 </template>
 
 <script>
@@ -46,11 +46,12 @@ export default {
     }))
     .draw()
 
-    play.stage()
-
-    play.stage(0, 330, 1400, 150)
+    play.stage(0, 320, 1400, 150)
     .add(new Volume)
-    // .add(new KDJ)
+    .draw()
+
+    play.stage(0, 510, 1400, 150)
+    .add(new KDJ)
     .draw()
   }
 }
