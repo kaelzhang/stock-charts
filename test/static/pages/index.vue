@@ -15,17 +15,20 @@ import {
 } from '../../../src'
 import qs from 'query-string'
 
-const PREFIX = 'http://api.ost.dev/stock/sz002239/candlesticks?'
+const _toSuffix = to => to ? `&to=${to}` : ''
+const getRemoteUrl = (code = 'sz002239', span = 'DAY', from = '2017-01-01', to) =>
+  `http://api.ost.dev/stock/${code}/candlesticks?span=${span}&from=${from}${_to_toSuffix(to)}`
 
 export default {
   async mounted () {
     const {
-      span = 'DAY',
-      from
+      span,
+      from,
+      to,
+      code
     } = qs.parse(location.search.slice(1))
 
-    const url = `${PREFIX}span=${span}&from=${from}`
-
+    const url = getRemoteUrl(code, span, from, to)
     const {data} = await axios.get(url)
 
     const chart = this.$refs.chart

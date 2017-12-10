@@ -6,8 +6,8 @@ import {mapClean} from './utils'
 
 const DEFAULT_OPTIONS = {
   periodSize: 9,
-  kPeriodSize: 9,
-  dPeriodSize: 9,
+  kPeriodSize: 3,
+  dPeriodSize: 3,
   kTimes: 3,
   dTimes: 2
 }
